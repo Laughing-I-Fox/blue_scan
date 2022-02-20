@@ -1,6 +1,7 @@
 package com.fox.blue_scan.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +14,21 @@ import androidx.annotation.Nullable;
 
 import com.fox.blue_scan.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BtAdapter extends ArrayAdapter<ListItem> {
     private List<ListItem> mainList;
+    private List<ViewHolder> listViewHolders;
+    private SharedPreferences pref;
+
 
 
     public BtAdapter(@NonNull Context context, int resource, List<ListItem> btList) {
         super(context, resource, btList);
         mainList = btList;
+        listViewHolders = new ArrayList<>();
+        pref = context.getSharedPreferences(BtConst.MY_PREF, Context.MODE_PRIVATE);
     }
 
     @NonNull
@@ -36,6 +43,7 @@ public class BtAdapter extends ArrayAdapter<ListItem> {
             viewHolder.tvBtName = convertView.findViewById(R.id.tvBtName);
             viewHolder.chBtSelected = convertView.findViewById(R.id.checkBox);
             convertView.setTag(viewHolder);
+            listViewHolders.add(viewHolder);
 
         } else {
 
@@ -44,10 +52,26 @@ public class BtAdapter extends ArrayAdapter<ListItem> {
         }
 
         viewHolder.tvBtName.setText(mainList.get(position).getBtName());
-//        viewHolder.chBtSelected.setChecked(true);
+        viewHolder.chBtSelected.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for(ViewHolder holder : listViewHolders){
+                    holder.chBtSelected.setChecked(false);
+                }
+                viewHolder.chBtSelected.setChecked(true);
+                savePref(position);
+            }
+        });
 
+        if (pref.getString(BtConst.MAC_KEY, "no bt selected").equals(mainList.get(position)
+                .getBtMac()))viewHolder.chBtSelected.setChecked(true);
 
         return convertView;
+    }
+    private void savePref(int pos){
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(BtConst.MAC_KEY, mainList.get(pos).getBtMac());
+        editor.apply();
     }
 
     static class ViewHolder {

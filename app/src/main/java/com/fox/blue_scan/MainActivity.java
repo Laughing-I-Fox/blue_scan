@@ -7,16 +7,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.fox.blue_scan.adapter.BtConst;
 
 public class MainActivity extends AppCompatActivity {
 
     private MenuItem menuItem;
     private BluetoothAdapter btAdapter;
     private final int ENABLE_REQUEST = 15;
+    private SharedPreferences pref;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private void init(){
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
-
+        pref = getSharedPreferences(BtConst.MY_PREF, MODE_PRIVATE);
     }
     @SuppressLint("MissingPermission")
     private void enableBt(){
